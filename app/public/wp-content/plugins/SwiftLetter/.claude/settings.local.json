@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(node:*)",
+      "Bash(cd \"/c/Users/MBabcock/Local Sites/test-plugin-dev/app/public/wp-content/plugins/SwiftLetter\" && npm run build 2>&12)",
+      "Bash(python3:*)",
+      "Bash(cd \"C:/Users/MBabcock/Local Sites/test-plugin-dev/app/public/wp-content/plugins/SwiftLetter\" && npm run build 2>&12)"
+    ]
+  }
+}

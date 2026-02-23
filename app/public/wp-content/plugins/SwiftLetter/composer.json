@@ -1,0 +1,22 @@
+{
+	"name": "swiftletter/swiftletter",
+	"description": "Accessible newsletter compilation, refinement, and multi-format publishing.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.1",
+		"openai-php/client": "^0.10",
+		"symfony/http-client": "^7.4",
+		"nyholm/psr7": "^1.8"
+	},
+	"autoload": {
+		"psr-4": {
+			"SwiftLetter\\": "includes/"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"php-http/discovery": true
+		}
+	}
+}

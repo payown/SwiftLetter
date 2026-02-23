@@ -1,0 +1,124 @@
+[22-Feb-2026 19:42:02 UTC] PHP Warning:  require_once(C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter/vendor/autoload.php): Failed to open stream: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\swiftletter.php on line 26
+[22-Feb-2026 19:42:02 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter/vendor/autoload.php' (include_path='.:/usr/share/php:/www/wp-content/pear') in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\swiftletter.php:26
+Stack trace:
+#0 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-admin\includes\plugin.php(2400): include_once()
+#1 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-admin\includes\plugin.php(673): plugin_sandbox_scrape('SwiftLetter/swi...')
+#2 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-admin\plugins.php(60): activate_plugin('SwiftLetter/swi...', 'http://test-plu...', false)
+#3 {main}
+  thrown in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\swiftletter.php on line 26
+[22-Feb-2026 20:38:40 UTC] PHP Fatal error:  Uncaught Error: Class "PhpOffice\PhpWord\IOFactory" not found in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\ArticlesController.php:383
+Stack trace:
+#0 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\ArticlesController.php(371): SwiftLetter\REST\ArticlesController->extract_docx_content('C:\\Windows\\Temp...')
+#1 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(1292): SwiftLetter\REST\ArticlesController->upload_docx(Object(WP_REST_Request))
+#2 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(1125): WP_REST_Server->respond_to_request(Object(WP_REST_Request), '/swiftletter/v1...', Array, NULL)
+#3 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(439): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#4 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api.php(467): WP_REST_Server->serve_request('/swiftletter/v1...')
+#5 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp-hook.php(341): rest_api_loaded(Object(WP))
+#6 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters('', Array)
+#7 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\plugin.php(570): WP_Hook->do_action(Array)
+#8 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp.php(418): do_action_ref_array('parse_request', Array)
+#9 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp.php(821): WP->parse_request('')
+#10 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\functions.php(1343): WP->main('')
+#11 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-blog-header.php(16): wp()
+#12 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\index.php(17): require('C:\\Users\\MBabco...')
+#13 {main}
+  thrown in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\ArticlesController.php on line 383
+[22-Feb-2026 20:39:19 UTC] PHP Fatal error:  Uncaught Error: Class "PhpOffice\PhpWord\IOFactory" not found in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\ArticlesController.php:383
+Stack trace:
+#0 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\ArticlesController.php(371): SwiftLetter\REST\ArticlesController->extract_docx_content('C:\\Windows\\Temp...')
+#1 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(1292): SwiftLetter\REST\ArticlesController->upload_docx(Object(WP_REST_Request))
+#2 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(1125): WP_REST_Server->respond_to_request(Object(WP_REST_Request), '/swiftletter/v1...', Array, NULL)
+#3 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(439): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#4 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api.php(467): WP_REST_Server->serve_request('/swiftletter/v1...')
+#5 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp-hook.php(341): rest_api_loaded(Object(WP))
+#6 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters('', Array)
+#7 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\plugin.php(570): WP_Hook->do_action(Array)
+#8 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp.php(418): do_action_ref_array('parse_request', Array)
+#9 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp.php(821): WP->parse_request('')
+#10 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\functions.php(1343): WP->main('')
+#11 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-blog-header.php(16): wp()
+#12 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\index.php(17): require('C:\\Users\\MBabco...')
+#13 {main}
+  thrown in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\ArticlesController.php on line 383
+[22-Feb-2026 22:06:34 UTC] PHP Fatal error:  Uncaught Error: Class "PhpOffice\PhpWord\IOFactory" not found in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\ArticlesController.php:438
+Stack trace:
+#0 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\ArticlesController.php(378): SwiftLetter\REST\ArticlesController->extract_docx_content('C:\\Windows\\Temp...')
+#1 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(1292): SwiftLetter\REST\ArticlesController->upload_docx(Object(WP_REST_Request))
+#2 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(1125): WP_REST_Server->respond_to_request(Object(WP_REST_Request), '/swiftletter/v1...', Array, NULL)
+#3 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(439): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#4 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api.php(467): WP_REST_Server->serve_request('/swiftletter/v1...')
+#5 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp-hook.php(341): rest_api_loaded(Object(WP))
+#6 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters('', Array)
+#7 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\plugin.php(570): WP_Hook->do_action(Array)
+#8 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp.php(418): do_action_ref_array('parse_request', Array)
+#9 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp.php(821): WP->parse_request('')
+#10 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\functions.php(1343): WP->main('')
+#11 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-blog-header.php(16): wp()
+#12 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\index.php(17): require('C:\\Users\\MBabco...')
+#13 {main}
+  thrown in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\ArticlesController.php on line 438
+[22-Feb-2026 22:56:19 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699b8992353806.11130226/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[22-Feb-2026 22:56:19 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699b8992353806.11130226/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[22-Feb-2026 22:56:19 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[22-Feb-2026 22:56:19 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:39:41 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699ba1cda61b46.16340972/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:39:41 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699ba1cda61b46.16340972/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:39:41 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:39:41 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:40:54 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699ba2161f6a46.18812310/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:40:54 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699ba2161f6a46.18812310/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:40:54 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:40:54 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:41:23 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699ba233ade1c8.95067395/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:41:23 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699ba233ade1c8.95067395/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:41:23 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 00:41:23 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 01:52:23 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699bb2d7d68c10.85277538/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 01:52:23 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699bb2d7d68c10.85277538/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 01:52:23 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 01:52:23 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 02:23:56 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699bba3c4e8a38.06476629/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 02:23:56 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699bba3c4e8a38.06476629/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 02:23:56 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 02:23:56 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 03:23:40 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699bc83c266490.64679096/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 03:23:40 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699bc83c266490.64679096/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 03:23:40 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 03:23:40 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 04:15:31 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699bd463e0fd79.31219095/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 04:15:31 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699bd463e0fd79.31219095/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 04:15:31 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 04:15:31 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:05:51 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699be02f213089.61053625/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:05:51 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699be02f213089.61053625/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:05:51 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:05:51 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:06:23 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699be04fd472c3.79484819/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:06:23 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699be04fd472c3.79484819/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:06:23 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:06:23 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:14:24 UTC] PHP Fatal error:  Uncaught OpenAI\Exceptions\ErrorException: Incorrect API key provided: +1Y/48yu********************************************************************************************************************************************************************************************************************************************************************ey7Y. You can find your API key at https://platform.openai.com/account/api-keys. in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\openai-php\client\src\Transporters\HttpTransporter.php:133
+Stack trace:
+#0 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\openai-php\client\src\Transporters\HttpTransporter.php(57): OpenAI\Transporters\HttpTransporter->throwIfJsonError(Array, '{\n    "error": ...')
+#1 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\openai-php\client\src\Resources\Chat.php(33): OpenAI\Transporters\HttpTransporter->requestObject(Object(OpenAI\ValueObjects\Transporter\Payload))
+#2 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\AI\OpenAIProvider.php(34): OpenAI\Resources\Chat->create(Array)
+#3 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\AI\AIService.php(15): SwiftLetter\AI\OpenAIProvider->refine('<!-- wp:paragra...', 'Dots and Dashes')
+#4 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\includes\REST\AIController.php(69): SwiftLetter\AI\AIService->refine('<!-- wp:paragra...', 'Dots and Dashes')
+#5 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(1292): SwiftLetter\REST\AIController->refine(Object(WP_REST_Request))
+#6 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(1125): WP_REST_Server->respond_to_request(Object(WP_REST_Request), '/swiftletter/v1...', Array, NULL)
+#7 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api\class-wp-rest-server.php(439): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#8 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\rest-api.php(467): WP_REST_Server->serve_request('/swiftletter/v1...')
+#9 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp-hook.php(341): rest_api_loaded(Object(WP))
+#10 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters('', Array)
+#11 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\plugin.php(570): WP_Hook->do_action(Array)
+#12 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp.php(418): do_action_ref_array('parse_request', Array)
+#13 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\class-wp.php(821): WP->parse_request('')
+#14 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-includes\functions.php(1343): WP->main('')
+#15 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-blog-header.php(16): wp()
+#16 C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\index.php(17): require('C:\\Users\\MBabco...')
+#17 {main}
+  thrown in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\openai-php\client\src\Transporters\HttpTransporter.php on line 133
+[23-Feb-2026 05:16:56 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699be2c8221f86.18067096/): Access is deni (code: 5) in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:16:56 UTC] PHP Warning:  scandir(C:\Windows\TEMP/PHPWordWriter_699be2c8221f86.18067096/): Failed to open directory: No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:16:56 UTC] PHP Warning:  scandir(): (errno 2): No such file or directory in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398
+[23-Feb-2026 05:16:56 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in C:\Users\MBabcock\Local Sites\test-plugin-dev\app\public\wp-content\plugins\SwiftLetter\vendor\phpoffice\phpword\src\PhpWord\Writer\AbstractWriter.php on line 398

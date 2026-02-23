@@ -1,0 +1,15 @@
+{
+	"name": "swiftletter",
+	"version": "1.0.0",
+	"private": true,
+	"description": "SwiftLetter WordPress Plugin",
+	"scripts": {
+		"build": "wp-scripts build",
+		"start": "wp-scripts start",
+		"lint:js": "wp-scripts lint-js",
+		"lint:css": "wp-scripts lint-style"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.0.0"
+	}
+}

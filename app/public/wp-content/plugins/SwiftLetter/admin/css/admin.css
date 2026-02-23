@@ -1,0 +1,149 @@
+/* SwiftLetter Admin Styles — Accessibility First */
+
+/* Dashboard container */
+#swiftletter-dashboard {
+	max-width: 1200px;
+	margin: 1rem auto;
+	font-size: 18px;
+}
+
+/* Focus visibility — WCAG 2.4.7 */
+#swiftletter-dashboard *:focus-visible {
+	outline: 2px solid #1E90FF;
+	outline-offset: 2px;
+}
+
+/* Buttons */
+#swiftletter-dashboard .components-button:focus-visible {
+	outline: 2px solid #1E90FF;
+	outline-offset: 2px;
+	box-shadow: none;
+}
+
+/* Article list items */
+.swl-article-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.swl-article-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	margin-bottom: 0.5rem;
+	background: #fff;
+}
+
+.swl-article-item:focus-within {
+	border-color: #1E90FF;
+}
+
+.swl-article-item__title {
+	flex: 1;
+	font-weight: 600;
+}
+
+.swl-article-item__actions {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+/* Status badges */
+.swl-badge {
+	display: inline-block;
+	padding: 0.15em 0.5em;
+	border-radius: 3px;
+	font-size: 0.85em;
+	font-weight: 600;
+}
+
+.swl-badge--confirmed {
+	background: #d4edda;
+	color: #155724;
+}
+
+.swl-badge--unconfirmed {
+	background: #fff3cd;
+	color: #856404;
+}
+
+.swl-badge--has-audio {
+	background: #d1ecf1;
+	color: #0c5460;
+}
+
+/* Export modal */
+.swl-export-modal .components-modal__content {
+	max-width: 500px;
+}
+
+.swl-export-links {
+	list-style: none;
+	padding: 0;
+	margin: 1rem 0;
+}
+
+.swl-export-links li {
+	margin-bottom: 0.75rem;
+}
+
+.swl-export-links a {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem;
+	background: #f0f0f0;
+	border-radius: 4px;
+	text-decoration: none;
+	color: #1d2327;
+	font-weight: 500;
+}
+
+.swl-export-links a:hover,
+.swl-export-links a:focus-visible {
+	background: #1E90FF;
+	color: #fff;
+}
+
+/* Newsletter header */
+.swl-newsletter-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.swl-newsletter-header h2 {
+	margin: 0;
+}
+
+/* Screen reader text */
+.swl-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Diff view for AI refinement */
+.swl-diff-added {
+	background: #d4edda;
+	text-decoration: none;
+}
+
+.swl-diff-removed {
+	background: #f8d7da;
+	text-decoration: line-through;
+}
