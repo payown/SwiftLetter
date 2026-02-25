@@ -9,13 +9,13 @@
 
 /* Focus visibility — WCAG 2.4.7 */
 #swiftletter-dashboard *:focus-visible {
-	outline: 2px solid #1E90FF;
+	outline: 2px solid #1e90ff;
 	outline-offset: 2px;
 }
 
 /* Buttons */
 #swiftletter-dashboard .components-button:focus-visible {
-	outline: 2px solid #1E90FF;
+	outline: 2px solid #1e90ff;
 	outline-offset: 2px;
 	box-shadow: none;
 }
@@ -39,7 +39,7 @@
 }
 
 .swl-article-item:focus-within {
-	border-color: #1E90FF;
+	border-color: #1e90ff;
 }
 
 .swl-article-item__title {
@@ -106,7 +106,7 @@
 
 .swl-export-links a:hover,
 .swl-export-links a:focus-visible {
-	background: #1E90FF;
+	background: #1e90ff;
 	color: #fff;
 }
 

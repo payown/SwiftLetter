@@ -133,15 +133,32 @@ export default function AIRefinementPanel() {
 }
 
 /**
- * Basic sanitization for preview display.
- * WordPress block content contains limited HTML.
+ * Sanitize HTML for preview display using DOMParser.
+ * Only allows a strict set of structural tags with no attributes.
  */
 function sanitizeForPreview( html ) {
-	const div = document.createElement( 'div' );
-	div.textContent = html;
-	// Return escaped text content, re-allowing basic HTML tags.
-	return html
-		.replace( /</g, '&lt;' )
-		.replace( />/g, '&gt;' )
-		.replace( /&lt;(\/?(p|h[1-6]|strong|em|a|ul|ol|li|br|blockquote)[^&]*?)&gt;/gi, '<$1>' );
+	const parser = new DOMParser();
+	const doc = parser.parseFromString( html, 'text/html' );
+	const allowed = new Set( [
+		'P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
+		'STRONG', 'EM', 'UL', 'OL', 'LI', 'BR', 'BLOCKQUOTE',
+	] );
+
+	function clean( node ) {
+		[ ...node.childNodes ].forEach( ( child ) => {
+			if ( child.nodeType === Node.ELEMENT_NODE ) {
+				if ( ! allowed.has( child.tagName ) ) {
+					child.replaceWith( document.createTextNode( child.textContent ) );
+				} else {
+					[ ...child.attributes ].forEach( ( a ) =>
+						child.removeAttribute( a.name )
+					);
+					clean( child );
+				}
+			}
+		} );
+	}
+
+	clean( doc.body );
+	return doc.body.innerHTML;
 }

@@ -25,8 +25,17 @@ class ExportController extends \WP_REST_Controller {
 		] );
 	}
 
-	public function permissions_check( $request ): bool {
-		return current_user_can( 'edit_posts' );
+	public function permissions_check( $request ): bool|\WP_Error {
+		if ( ! current_user_can( 'publish_posts' ) ) {
+			return false;
+		}
+
+		$post_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
+		if ( $post_id && ! current_user_can( 'edit_post', $post_id ) ) {
+			return new \WP_Error( 'rest_forbidden', __( 'You cannot publish this newsletter.', 'swiftletter' ), [ 'status' => 403 ] );
+		}
+
+		return true;
 	}
 
 	public function publish_post( $request ): \WP_REST_Response|\WP_Error {

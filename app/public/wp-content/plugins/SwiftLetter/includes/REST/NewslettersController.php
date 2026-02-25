@@ -91,16 +91,43 @@ class NewslettersController extends \WP_REST_Controller {
 		return current_user_can( 'edit_posts' );
 	}
 
-	public function get_item_permissions_check( $request ): bool {
-		return current_user_can( 'edit_posts' );
+	public function get_item_permissions_check( $request ): bool|\WP_Error {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return false;
+		}
+
+		$post_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
+		if ( $post_id && ! current_user_can( 'edit_post', $post_id ) ) {
+			return new \WP_Error( 'rest_forbidden', __( 'You cannot edit this newsletter.', 'swiftletter' ), [ 'status' => 403 ] );
+		}
+
+		return true;
 	}
 
-	public function update_item_permissions_check( $request ): bool {
-		return current_user_can( 'edit_posts' );
+	public function update_item_permissions_check( $request ): bool|\WP_Error {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return false;
+		}
+
+		$post_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
+		if ( $post_id && ! current_user_can( 'edit_post', $post_id ) ) {
+			return new \WP_Error( 'rest_forbidden', __( 'You cannot edit this newsletter.', 'swiftletter' ), [ 'status' => 403 ] );
+		}
+
+		return true;
 	}
 
-	public function delete_item_permissions_check( $request ): bool {
-		return current_user_can( 'edit_posts' );
+	public function delete_item_permissions_check( $request ): bool|\WP_Error {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return false;
+		}
+
+		$post_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
+		if ( $post_id && ! current_user_can( 'delete_post', $post_id ) ) {
+			return new \WP_Error( 'rest_forbidden', __( 'You cannot delete this newsletter.', 'swiftletter' ), [ 'status' => 403 ] );
+		}
+
+		return true;
 	}
 
 	public function get_items( $request ): \WP_REST_Response {

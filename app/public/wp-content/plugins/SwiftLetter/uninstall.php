@@ -14,12 +14,17 @@ if ( ! current_user_can( 'activate_plugins' ) ) {
 global $wpdb;
 
 // Drop custom tables.
+// Note: Table names cannot be parameterized in prepared statements.
+// $wpdb->prefix is set in wp-config.php and is not user-controlled.
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}swl_audit_log" );
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}swl_article_versions" );
 
 // Delete all swl_* options.
 $wpdb->query(
-	"DELETE FROM {$wpdb->options} WHERE option_name LIKE 'swl\_%'"
+	$wpdb->prepare(
+		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+		'swl\_%'
+	)
 );
 
 // Delete all CPT posts and their meta.
@@ -48,5 +53,9 @@ if ( is_dir( $swl_dir ) ) {
 
 // Delete transients.
 $wpdb->query(
-	"DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_swl\_%' OR option_name LIKE '_transient_timeout_swl\_%'"
+	$wpdb->prepare(
+		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+		'_transient_swl\_%',
+		'_transient_timeout_swl\_%'
+	)
 );

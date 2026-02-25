@@ -51,14 +51,17 @@ class Activator {
 			wp_mkdir_p( $exports_dir );
 		}
 
-		// Protect exports directory from direct access.
-		$htaccess_path = $exports_dir . '/.htaccess';
-		if ( ! file_exists( $htaccess_path ) ) {
-			file_put_contents( $htaccess_path, "deny from all\n" );
-		}
-		$index_path = $exports_dir . '/index.php';
-		if ( ! file_exists( $index_path ) ) {
-			file_put_contents( $index_path, "<?php\n// Silence is golden.\n" );
+		// Protect directories from direct access.
+		$protected_dirs = [ $swl_dir, $exports_dir ];
+		foreach ( $protected_dirs as $dir ) {
+			$htaccess_path = $dir . '/.htaccess';
+			if ( ! file_exists( $htaccess_path ) ) {
+				file_put_contents( $htaccess_path, "deny from all\n" );
+			}
+			$index_path = $dir . '/index.php';
+			if ( ! file_exists( $index_path ) ) {
+				file_put_contents( $index_path, "<?php\n// Silence is golden.\n" );
+			}
 		}
 
 		// Flush rewrite rules.

@@ -48,8 +48,17 @@ class AIController extends \WP_REST_Controller {
 		] );
 	}
 
-	public function permissions_check( $request ): bool {
-		return current_user_can( 'edit_posts' );
+	public function permissions_check( $request ): bool|\WP_Error {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return false;
+		}
+
+		$post_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
+		if ( $post_id && ! current_user_can( 'edit_post', $post_id ) ) {
+			return new \WP_Error( 'rest_forbidden', __( 'You cannot edit this item.', 'swiftletter' ), [ 'status' => 403 ] );
+		}
+
+		return true;
 	}
 
 	public function refine( $request ): \WP_REST_Response|\WP_Error {
@@ -68,7 +77,8 @@ class AIController extends \WP_REST_Controller {
 			$ai_service     = new AIService();
 			$refined_content = $ai_service->refine( $original_content, $post->post_title );
 		} catch ( \Throwable $e ) {
-			return new \WP_Error( 'ai_error', $e->getMessage(), [ 'status' => 500 ] );
+			error_log( 'SwiftLetter AI refine error: ' . $e->getMessage() );
+			return new \WP_Error( 'ai_error', __( 'AI refinement failed. Please try again.', 'swiftletter' ), [ 'status' => 500 ] );
 		}
 
 		// Update post content.
@@ -110,7 +120,8 @@ class AIController extends \WP_REST_Controller {
 			$ai_service = new AIService();
 			$alt_text   = $ai_service->generate_alt_text( $article_title );
 		} catch ( \Throwable $e ) {
-			return new \WP_Error( 'ai_error', $e->getMessage(), [ 'status' => 500 ] );
+			error_log( 'SwiftLetter AI alt-text error: ' . $e->getMessage() );
+			return new \WP_Error( 'ai_error', __( 'Alt text generation failed. Please try again.', 'swiftletter' ), [ 'status' => 500 ] );
 		}
 
 		update_post_meta( $attachment_id, '_wp_attachment_image_alt', sanitize_text_field( $alt_text ) );

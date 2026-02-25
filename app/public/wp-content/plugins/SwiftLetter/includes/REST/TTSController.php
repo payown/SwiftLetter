@@ -12,6 +12,12 @@ use SwiftLetter\TTS\TTSService;
 
 class TTSController extends \WP_REST_Controller {
 
+	private const ALLOWED_VOICES = [
+		'alloy', 'ash', 'ballad', 'cedar', 'coral',
+		'echo', 'fable', 'marin', 'nova', 'onyx',
+		'sage', 'shimmer', 'verse',
+	];
+
 	protected $namespace = 'swiftletter/v1';
 	protected $rest_base = 'tts';
 
@@ -30,7 +36,12 @@ class TTSController extends \WP_REST_Controller {
 				'callback'            => [ $this, 'preview' ],
 				'permission_callback' => [ $this, 'permissions_check' ],
 				'args'                => [
-					'voice' => [ 'required' => true, 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
+					'voice' => [
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+						'enum'              => self::ALLOWED_VOICES,
+					],
 					'text'  => [ 'required' => true, 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field' ],
 				],
 			],
@@ -42,7 +53,11 @@ class TTSController extends \WP_REST_Controller {
 				'callback'            => [ $this, 'generate_audio' ],
 				'permission_callback' => [ $this, 'permissions_check' ],
 				'args'                => [
-					'voice' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
+					'voice' => [
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+						'enum'              => self::ALLOWED_VOICES,
+					],
 				],
 			],
 		] );
@@ -56,8 +71,17 @@ class TTSController extends \WP_REST_Controller {
 		] );
 	}
 
-	public function permissions_check( $request ): bool {
-		return current_user_can( 'edit_posts' );
+	public function permissions_check( $request ): bool|\WP_Error {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return false;
+		}
+
+		$post_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
+		if ( $post_id && ! current_user_can( 'edit_post', $post_id ) ) {
+			return new \WP_Error( 'rest_forbidden', __( 'You cannot edit this item.', 'swiftletter' ), [ 'status' => 403 ] );
+		}
+
+		return true;
 	}
 
 	public function get_voices( $request ): \WP_REST_Response {
@@ -95,7 +119,8 @@ class TTSController extends \WP_REST_Controller {
 			$tts_service = new TTSService();
 			$audio_data  = $tts_service->generate_speech_data( $text, $voice );
 		} catch ( \RuntimeException $e ) {
-			return new \WP_Error( 'tts_error', $e->getMessage(), [ 'status' => 500 ] );
+			error_log( 'SwiftLetter TTS preview error: ' . $e->getMessage() );
+			return new \WP_Error( 'tts_error', __( 'Text-to-speech preview failed. Please try again.', 'swiftletter' ), [ 'status' => 500 ] );
 		}
 
 		return new \WP_REST_Response( [
@@ -117,7 +142,8 @@ class TTSController extends \WP_REST_Controller {
 			$tts_service = new TTSService();
 			$file_path   = $tts_service->generate_for_article( $post, $voice );
 		} catch ( \RuntimeException $e ) {
-			return new \WP_Error( 'tts_error', $e->getMessage(), [ 'status' => 500 ] );
+			error_log( 'SwiftLetter TTS generate error: ' . $e->getMessage() );
+			return new \WP_Error( 'tts_error', __( 'Audio generation failed. Please try again.', 'swiftletter' ), [ 'status' => 500 ] );
 		}
 
 		update_post_meta( $post->ID, '_swl_audio_file_path', $file_path );
@@ -147,11 +173,22 @@ class TTSController extends \WP_REST_Controller {
 			return new \WP_Error( 'no_audio', __( 'No audio file available.', 'swiftletter' ), [ 'status' => 404 ] );
 		}
 
-		// Stream the file.
-		header( 'Content-Type: audio/mpeg' );
-		header( 'Content-Length: ' . filesize( $file_path ) );
-		header( 'Content-Disposition: inline; filename="article-' . $post->ID . '.mp3"' );
-		readfile( $file_path );
-		exit;
+		// Validate the file path is within the expected audio directory to prevent path traversal.
+		$upload_dir   = wp_upload_dir();
+		$allowed_base = realpath( $upload_dir['basedir'] . '/swiftletter/audio' );
+		$real_path    = realpath( $file_path );
+
+		if ( ! $allowed_base || ! $real_path || ! str_starts_with( $real_path, $allowed_base . DIRECTORY_SEPARATOR ) ) {
+			return new \WP_Error( 'forbidden', __( 'Invalid audio file path.', 'swiftletter' ), [ 'status' => 403 ] );
+		}
+
+		$file_size = filesize( $real_path );
+
+		// Return audio as base64-encoded data in a REST-compatible response.
+		return new \WP_REST_Response( [
+			'audio' => base64_encode( file_get_contents( $real_path ) ),
+			'type'  => 'audio/mpeg',
+			'size'  => $file_size,
+		], 200 );
 	}
 }

@@ -49,8 +49,13 @@ class Encryption {
 	 * Derive a 32-byte encryption key from WordPress salts.
 	 */
 	private static function derive_key(): string {
-		$material = ( defined( 'AUTH_KEY' ) ? AUTH_KEY : 'swl-default-key' )
-			. ( defined( 'SECURE_AUTH_KEY' ) ? SECURE_AUTH_KEY : 'swl-default-secure' );
+		if ( ! defined( 'AUTH_KEY' ) || ! defined( 'SECURE_AUTH_KEY' ) || AUTH_KEY === 'put your unique phrase here' || SECURE_AUTH_KEY === 'put your unique phrase here' ) {
+			throw new \RuntimeException(
+				__( 'SwiftLetter requires AUTH_KEY and SECURE_AUTH_KEY to be set in wp-config.php.', 'swiftletter' )
+			);
+		}
+
+		$material = AUTH_KEY . SECURE_AUTH_KEY;
 
 		return hash( 'sha256', $material, true );
 	}

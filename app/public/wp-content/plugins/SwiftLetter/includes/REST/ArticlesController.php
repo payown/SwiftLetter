@@ -117,8 +117,17 @@ class ArticlesController extends \WP_REST_Controller {
 		] );
 	}
 
-	public function permissions_check( $request ): bool {
-		return current_user_can( 'edit_posts' );
+	public function permissions_check( $request ): bool|\WP_Error {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return false;
+		}
+
+		$post_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
+		if ( $post_id && ! current_user_can( 'edit_post', $post_id ) ) {
+			return new \WP_Error( 'rest_forbidden', __( 'You cannot edit this item.', 'swiftletter' ), [ 'status' => 403 ] );
+		}
+
+		return true;
 	}
 
 	public function create_item( $request ): \WP_REST_Response|\WP_Error {
@@ -552,7 +561,10 @@ class ArticlesController extends \WP_REST_Controller {
 
 		// Copy the source to a temp file with the correct extension so WP detects the MIME type.
 		$tmp_path = wp_tempnam( 'swl-docx-image' );
-		if ( ! @copy( $source, $tmp_path ) ) {
+		if ( ! copy( $source, $tmp_path ) ) {
+			if ( file_exists( $tmp_path ) ) {
+				wp_delete_file( $tmp_path );
+			}
 			return null;
 		}
 
@@ -565,7 +577,7 @@ class ArticlesController extends \WP_REST_Controller {
 
 		// Temp file is consumed (moved) by media_handle_sideload; clean up only if it still exists.
 		if ( file_exists( $tmp_path ) ) {
-			@unlink( $tmp_path );
+			wp_delete_file( $tmp_path );
 		}
 
 		if ( is_wp_error( $attachment_id ) ) {
