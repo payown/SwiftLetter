@@ -282,6 +282,9 @@ class SettingsPage {
 		$type     = $is_color ? 'color' : ( $is_size ? 'number' : 'text' );
 
 		?>
+		<label for="<?php echo esc_attr( $field_id ); ?>" class="screen-reader-text">
+			<?php echo esc_html( $args['label'] ); ?>
+		</label>
 		<input
 			type="<?php echo esc_attr( $type ); ?>"
 			id="<?php echo esc_attr( $field_id ); ?>"

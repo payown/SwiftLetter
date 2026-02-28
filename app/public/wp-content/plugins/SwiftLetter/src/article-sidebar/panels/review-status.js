@@ -70,7 +70,7 @@ export default function ReviewStatusPanel() {
 					) }
 
 					{ isPostDirty && (
-						<p style={ { color: '#856404', fontWeight: 600 } } role="alert">
+						<p style={ { color: '#5c4400', fontWeight: 600 } } role="alert">
 							{ __( '⚠ Content has been modified. Review confirmation will be reset on save.', 'swiftletter' ) }
 						</p>
 					) }

@@ -8,7 +8,7 @@ export default function KeyboardShortcutsHelpModal( { onClose } ) {
 			onRequestClose={ onClose }
 			className="swl-shortcuts-modal"
 		>
-			<h3>{ __( 'Dashboard', 'swiftletter' ) }</h3>
+			<h2>{ __( 'Dashboard', 'swiftletter' ) }</h2>
 			<table className="swl-shortcuts-table" role="table">
 				<thead>
 					<tr>
@@ -56,7 +56,7 @@ export default function KeyboardShortcutsHelpModal( { onClose } ) {
 				</tbody>
 			</table>
 
-			<h3>{ __( 'Article Editor Sidebar', 'swiftletter' ) }</h3>
+			<h2>{ __( 'Article Editor Sidebar', 'swiftletter' ) }</h2>
 			<table className="swl-shortcuts-table" role="table">
 				<thead>
 					<tr>

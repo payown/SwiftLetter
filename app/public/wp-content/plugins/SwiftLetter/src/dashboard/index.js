@@ -1,4 +1,4 @@
-import { render, useState, useEffect, useCallback, useMemo } from '@wordpress/element';
+import { render, useState, useEffect, useCallback, useMemo, useRef } from '@wordpress/element';
 import { SlotFillProvider, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
@@ -17,6 +17,7 @@ function App() {
 	const [ currentNewsletterId, setCurrentNewsletterId ] = useState( null );
 	const [ notification, setNotification ] = useState( null );
 	const [ showHelpModal, setShowHelpModal ] = useState( false );
+	const helpBtnRef = useRef( null );
 
 	// Auto-navigate to newsletter-detail if newsletter_id is in URL (return from editor).
 	useEffect( () => {
@@ -65,6 +66,7 @@ function App() {
 
 				<div className="swl-global-help-row">
 					<Button
+						ref={ helpBtnRef }
 						variant="tertiary"
 						onClick={ () => setShowHelpModal( true ) }
 						aria-keyshortcuts="Alt+Shift+H"
@@ -75,7 +77,7 @@ function App() {
 				</div>
 
 				{ showHelpModal && (
-					<KeyboardShortcutsHelpModal onClose={ () => setShowHelpModal( false ) } />
+					<KeyboardShortcutsHelpModal onClose={ () => { setShowHelpModal( false ); setTimeout( () => helpBtnRef.current?.focus(), 0 ); } } />
 				) }
 
 				{ view === 'newsletters-list' && (

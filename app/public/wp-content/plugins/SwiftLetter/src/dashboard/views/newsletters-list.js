@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from '@wordpress/element';
+import { useState, useEffect, useMemo, useRef } from '@wordpress/element';
 import useKeyboardShortcuts from '../hooks/use-keyboard-shortcuts';
 import { Button, Spinner } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -7,6 +7,7 @@ import apiFetch from '@wordpress/api-fetch';
 export default function NewslettersList( { navigate, notify } ) {
 	const [ newsletters, setNewsletters ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
+	const createBtnRef = useRef( null );
 
 	useEffect( () => {
 		loadNewsletters();
@@ -26,7 +27,7 @@ export default function NewslettersList( { navigate, notify } ) {
 		}
 	};
 
-	const handleDelete = async ( id, title ) => {
+	const handleDelete = async ( id, title, index ) => {
 		if ( ! window.confirm(
 			/* translators: %s: newsletter title */
 			__( 'Delete newsletter "%s" and all its articles? This cannot be undone.', 'swiftletter' ).replace( '%s', title )
@@ -34,13 +35,24 @@ export default function NewslettersList( { navigate, notify } ) {
 			return;
 		}
 
+		const nextFocusIndex = index < newsletters.length - 1 ? index : index - 1;
+
 		try {
 			await apiFetch( {
 				path: `/swiftletter/v1/newsletters/${ id }`,
 				method: 'DELETE',
 			} );
 			notify( __( 'Newsletter deleted.', 'swiftletter' ) );
-			loadNewsletters();
+			await loadNewsletters();
+			setTimeout( () => {
+				if ( nextFocusIndex >= 0 ) {
+					const btn = document.querySelector(
+						`[data-newsletter-index="${ nextFocusIndex }"] button`
+					);
+					if ( btn ) { btn.focus(); return; }
+				}
+				createBtnRef.current?.focus();
+			}, 0 );
 		} catch ( err ) {
 			notify( err.message || __( 'Failed to delete newsletter.', 'swiftletter' ), 'error' );
 		}
@@ -66,6 +78,7 @@ export default function NewslettersList( { navigate, notify } ) {
 			<div className="swl-header-row">
 				<h2>{ __( 'Newsletters', 'swiftletter' ) }</h2>
 				<Button
+					ref={ createBtnRef }
 					variant="primary"
 					onClick={ () => navigate( 'create-newsletter' ) }
 					aria-keyshortcuts="Alt+Shift+N"
@@ -90,8 +103,8 @@ export default function NewslettersList( { navigate, notify } ) {
 						</tr>
 					</thead>
 					<tbody>
-						{ newsletters.map( ( nl ) => (
-							<tr key={ nl.id }>
+						{ newsletters.map( ( nl, index ) => (
+							<tr key={ nl.id } data-newsletter-index={ index }>
 								<td>
 									<Button
 										variant="link"
@@ -106,7 +119,7 @@ export default function NewslettersList( { navigate, notify } ) {
 									<Button
 										variant="tertiary"
 										isDestructive
-										onClick={ () => handleDelete( nl.id, nl.title?.rendered || nl.title ) }
+										onClick={ () => handleDelete( nl.id, nl.title?.rendered || nl.title, index ) }
 										aria-label={
 											/* translators: %s: newsletter title */
 											__( 'Delete %s', 'swiftletter' ).replace( '%s', nl.title?.rendered || nl.title )

@@ -134,8 +134,10 @@ class ExportController extends \WP_REST_Controller {
 
 			if ( $newsletter_audio_url ) {
 				$blocks .= sprintf(
-					"<!-- wp:audio -->\n<figure class=\"wp-block-audio\"><audio controls src=\"%s\"></audio></figure>\n<!-- /wp:audio -->\n\n",
-					esc_url( $newsletter_audio_url )
+					"<!-- wp:audio -->\n<figure class=\"wp-block-audio\"><audio controls src=\"%s\" aria-label=\"%s\">%s</audio></figure>\n<!-- /wp:audio -->\n\n",
+					esc_url( $newsletter_audio_url ),
+					esc_attr( $newsletter->post_title ),
+					esc_html__( 'Your browser does not support audio playback.', 'swiftletter' )
 				);
 				$blocks .= sprintf(
 					"<!-- wp:paragraph -->\n<p><a href=\"%s\" download>Download Newsletter Audio (MP3)</a></p>\n<!-- /wp:paragraph -->\n\n",

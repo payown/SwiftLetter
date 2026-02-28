@@ -105,6 +105,8 @@ export default function AIRefinementPanel() {
 							lineHeight: '1.6',
 							marginBottom: '0.75rem',
 						} }
+						role="region"
+						tabIndex="0"
 						aria-label={ __( 'Refined content preview', 'swiftletter' ) }
 						// eslint-disable-next-line react/no-danger
 						dangerouslySetInnerHTML={ {

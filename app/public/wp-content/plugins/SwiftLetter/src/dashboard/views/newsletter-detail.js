@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from '@wordpress/element';
+import { useState, useEffect, useCallback, useMemo, useRef } from '@wordpress/element';
 import useKeyboardShortcuts from '../hooks/use-keyboard-shortcuts';
 import {
 	Button,
@@ -18,9 +18,13 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 	const [ titleDraft, setTitleDraft ] = useState( '' );
 	const [ liveMessage, setLiveMessage ] = useState( '' );
 
+	// Refs for focus restoration.
+	const addArticleBtnRef = useRef( null );
+
 	// Add article modal.
 	const [ showAddModal, setShowAddModal ] = useState( false );
 	const [ newArticleTitle, setNewArticleTitle ] = useState( '' );
+	const [ newArticleTitleError, setNewArticleTitleError ] = useState( '' );
 	const [ addingArticle, setAddingArticle ] = useState( false );
 
 	// Publish as WordPress post.
@@ -155,12 +159,21 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 		}
 	};
 
+	// Close Add Article modal and return focus to the trigger button.
+	const closeAddModal = useCallback( () => {
+		setShowAddModal( false );
+		setNewArticleTitle( '' );
+		setNewArticleTitleError( '' );
+		setTimeout( () => addArticleBtnRef.current?.focus(), 0 );
+	}, [] );
+
 	// Add article.
 	const handleAddArticle = async () => {
 		if ( ! newArticleTitle.trim() ) {
-			notify( __( 'Please enter an article title.', 'swiftletter' ), 'error' );
+			setNewArticleTitleError( __( 'Please enter an article title.', 'swiftletter' ) );
 			return;
 		}
+		setNewArticleTitleError( '' );
 
 		setAddingArticle( true );
 		try {
@@ -172,8 +185,7 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 					newsletter_id: newsletterId,
 				},
 			} );
-			setShowAddModal( false );
-			setNewArticleTitle( '' );
+			closeAddModal();
 			loadNewsletter();
 			notify( __( 'Article created.', 'swiftletter' ) );
 		} catch ( err ) {
@@ -217,20 +229,36 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 	};
 
 	// Remove article.
-	const removeArticle = async ( articleId, articleTitle ) => {
+	const removeArticle = async ( articleId, articleTitle, articleIndex ) => {
 		if ( ! window.confirm(
 			__( 'Remove article "%s" from this newsletter?', 'swiftletter' ).replace( '%s', articleTitle )
 		) ) {
 			return;
 		}
 
+		// Determine where focus should go after the item is removed.
+		const totalArticles = articles.length;
+		const nextFocusIndex = articleIndex < totalArticles - 1 ? articleIndex : articleIndex - 1;
+
 		try {
 			await apiFetch( {
 				path: `/swiftletter/v1/articles/${ articleId }`,
 				method: 'DELETE',
 			} );
-			loadNewsletter();
+			await loadNewsletter();
 			notify( __( 'Article removed.', 'swiftletter' ) );
+			setTimeout( () => {
+				if ( nextFocusIndex >= 0 ) {
+					const btn = document.querySelector(
+						`[data-article-index="${ nextFocusIndex }"] .swl-reorder-btn`
+					);
+					if ( btn ) {
+						btn.focus();
+						return;
+					}
+				}
+				addArticleBtnRef.current?.focus();
+			}, 0 );
 		} catch ( err ) {
 			notify( err.message || __( 'Failed to remove article.', 'swiftletter' ), 'error' );
 		}
@@ -389,6 +417,7 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 			<div className="swl-header-row">
 				<div style={ { display: 'flex', gap: '0.5rem', flexWrap: 'wrap' } }>
 					<Button
+						ref={ addArticleBtnRef }
 						variant="secondary"
 						onClick={ () => setShowAddModal( true ) }
 						aria-keyshortcuts="Alt+Shift+A"
@@ -438,7 +467,7 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 			</div>
 
 			{ generatingNewsletterAudio && (
-				<div className="swl-audio-progress">
+				<div className="swl-audio-progress" role="status" aria-live="polite">
 					<Spinner />
 					<span>{ __( 'Generating audio for all articles. This may take a minute\u2026', 'swiftletter' ) }</span>
 				</div>
@@ -448,7 +477,9 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 				<div className="swl-notification swl-notification--success" role="status">
 					{ __( 'Draft post created: ', 'swiftletter' ) }
 					<a href={ publishedPostEditUrl } target="_blank" rel="noreferrer">
-						{ __( 'Edit Post →', 'swiftletter' ) }
+						{ __( 'Edit Post', 'swiftletter' ) }
+						<span aria-hidden="true"> →</span>
+						<span className="swl-sr-only">{ __( ' (opens in new tab)', 'swiftletter' ) }</span>
 					</a>
 				</div>
 			) }
@@ -473,6 +504,10 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 							<li key={ img.id } style={ { marginBottom: '0.25rem' } }>
 								<a href={ img.edit_url } target="_blank" rel="noreferrer">
 									{ __( 'Edit in Media Library', 'swiftletter' ) }
+									<span className="swl-sr-only">
+										{ /* translators: %d: image attachment ID */
+										__( ' (image #%d, opens in new tab)', 'swiftletter' ).replace( '%d', img.id ) }
+									</span>
 								</a>
 								{ ' — ' }
 								<Button
@@ -573,7 +608,7 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 									variant="tertiary"
 									size="small"
 									isDestructive
-									onClick={ () => removeArticle( article.id, article.title ) }
+									onClick={ () => removeArticle( article.id, article.title, index ) }
 									aria-label={
 										__( 'Remove %s', 'swiftletter' ).replace( '%s', article.title )
 									}
@@ -590,15 +625,22 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 			{ showAddModal && (
 				<Modal
 					title={ __( 'Add Article', 'swiftletter' ) }
-					onRequestClose={ () => setShowAddModal( false ) }
+					onRequestClose={ closeAddModal }
 				>
 					<div className="swl-form-group">
 						<TextControl
 							label={ __( 'Article Title', 'swiftletter' ) }
 							value={ newArticleTitle }
-							onChange={ setNewArticleTitle }
+							onChange={ ( val ) => { setNewArticleTitle( val ); setNewArticleTitleError( '' ); } }
 							autoFocus
+							aria-invalid={ !! newArticleTitleError }
+							aria-describedby={ newArticleTitleError ? 'swl-article-title-error' : undefined }
 						/>
+						{ newArticleTitleError && (
+							<p id="swl-article-title-error" role="alert" style={ { color: '#721c24', marginTop: '0.25rem', fontSize: '13px' } }>
+								{ newArticleTitleError }
+							</p>
+						) }
 					</div>
 					<div className="swl-form-actions">
 						<Button
@@ -611,7 +653,7 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 						</Button>
 						<Button
 							variant="tertiary"
-							onClick={ () => setShowAddModal( false ) }
+							onClick={ closeAddModal }
 							disabled={ addingArticle }
 						>
 							{ __( 'Cancel', 'swiftletter' ) }
