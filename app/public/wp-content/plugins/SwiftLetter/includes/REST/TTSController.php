@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use SwiftLetter\PostTypes\Article;
+use SwiftLetter\PostTypes\Newsletter;
 use SwiftLetter\Settings\Encryption;
 use SwiftLetter\TTS\TTSService;
 
@@ -66,6 +67,29 @@ class TTSController extends \WP_REST_Controller {
 			[
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'serve_audio' ],
+				'permission_callback' => [ $this, 'permissions_check' ],
+			],
+		] );
+
+		register_rest_route( $this->namespace, '/newsletters/(?P<id>[\d]+)/generate-audio', [
+			[
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => [ $this, 'generate_newsletter_audio' ],
+				'permission_callback' => [ $this, 'permissions_check' ],
+				'args'                => [
+					'voice' => [
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+						'enum'              => self::ALLOWED_VOICES,
+					],
+				],
+			],
+		] );
+
+		register_rest_route( $this->namespace, '/newsletters/(?P<id>[\d]+)/audio', [
+			[
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'serve_newsletter_audio' ],
 				'permission_callback' => [ $this, 'permissions_check' ],
 			],
 		] );
@@ -149,6 +173,13 @@ class TTSController extends \WP_REST_Controller {
 		update_post_meta( $post->ID, '_swl_audio_file_path', $file_path );
 
 		$newsletter_id = (int) get_post_meta( $post->ID, '_swl_newsletter_id', true );
+
+		// If this newsletter has already been published as a WordPress post, update
+		// that post now so the audio player appears without needing to re-publish.
+		if ( $newsletter_id ) {
+			ExportController::rebuild_published_post( $newsletter_id );
+		}
+
 		$audit = new \SwiftLetter\Audit\AuditLog();
 		$audit->log( $newsletter_id, $post->ID, 'article_audio_generated', [
 			'voice' => $voice,
@@ -185,6 +216,93 @@ class TTSController extends \WP_REST_Controller {
 		$file_size = filesize( $real_path );
 
 		// Return audio as base64-encoded data in a REST-compatible response.
+		return new \WP_REST_Response( [
+			'audio' => base64_encode( file_get_contents( $real_path ) ),
+			'type'  => 'audio/mpeg',
+			'size'  => $file_size,
+		], 200 );
+	}
+
+	public function generate_newsletter_audio( $request ): \WP_REST_Response|\WP_Error {
+		$newsletter = get_post( $request['id'] );
+
+		if ( ! $newsletter || $newsletter->post_type !== Newsletter::POST_TYPE ) {
+			return new \WP_Error( 'not_found', __( 'Newsletter not found.', 'swiftletter' ), [ 'status' => 404 ] );
+		}
+
+		$voice = $request->get_param( 'voice' ) ?: get_option( 'swl_tts_voice', 'coral' );
+
+		// Get ordered articles for this newsletter.
+		$articles = get_posts( [
+			'post_type'      => Article::POST_TYPE,
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+			'meta_query'     => [
+				'relation'          => 'AND',
+				'newsletter_clause' => [
+					'key'   => '_swl_newsletter_id',
+					'value' => $newsletter->ID,
+				],
+				'order_clause'      => [
+					'key'  => '_swl_article_order',
+					'type' => 'NUMERIC',
+				],
+			],
+			'orderby'        => 'order_clause',
+			'order'          => 'ASC',
+		] );
+
+		if ( empty( $articles ) ) {
+			return new \WP_Error( 'no_articles', __( 'Newsletter has no articles.', 'swiftletter' ), [ 'status' => 422 ] );
+		}
+
+		try {
+			$tts_service = new TTSService();
+			$file_path   = $tts_service->generate_for_newsletter( $newsletter, $articles, $voice );
+		} catch ( \RuntimeException $e ) {
+			error_log( 'SwiftLetter TTS newsletter error: ' . $e->getMessage() );
+			return new \WP_Error( 'tts_error', __( 'Newsletter audio generation failed. Please try again.', 'swiftletter' ), [ 'status' => 500 ] );
+		}
+
+		update_post_meta( $newsletter->ID, '_swl_newsletter_audio_file_path', $file_path );
+
+		// Update published post if it exists.
+		ExportController::rebuild_published_post( $newsletter->ID );
+
+		$audit = new \SwiftLetter\Audit\AuditLog();
+		$audit->log( $newsletter->ID, null, 'newsletter_audio_generated', [
+			'voice' => $voice,
+		] );
+
+		return new \WP_REST_Response( [
+			'success' => true,
+		], 200 );
+	}
+
+	public function serve_newsletter_audio( $request ): \WP_REST_Response|\WP_Error {
+		$newsletter = get_post( $request['id'] );
+
+		if ( ! $newsletter || $newsletter->post_type !== Newsletter::POST_TYPE ) {
+			return new \WP_Error( 'not_found', __( 'Newsletter not found.', 'swiftletter' ), [ 'status' => 404 ] );
+		}
+
+		$file_path = get_post_meta( $newsletter->ID, '_swl_newsletter_audio_file_path', true );
+
+		if ( empty( $file_path ) || ! file_exists( $file_path ) ) {
+			return new \WP_Error( 'no_audio', __( 'No audio file available.', 'swiftletter' ), [ 'status' => 404 ] );
+		}
+
+		// Validate path is within the expected audio directory to prevent path traversal.
+		$upload_dir   = wp_upload_dir();
+		$allowed_base = realpath( $upload_dir['basedir'] . '/swiftletter/audio' );
+		$real_path    = realpath( $file_path );
+
+		if ( ! $allowed_base || ! $real_path || ! str_starts_with( $real_path, $allowed_base . DIRECTORY_SEPARATOR ) ) {
+			return new \WP_Error( 'forbidden', __( 'Invalid audio file path.', 'swiftletter' ), [ 'status' => 403 ] );
+		}
+
+		$file_size = filesize( $real_path );
+
 		return new \WP_REST_Response( [
 			'audio' => base64_encode( file_get_contents( $real_path ) ),
 			'type'  => 'audio/mpeg',

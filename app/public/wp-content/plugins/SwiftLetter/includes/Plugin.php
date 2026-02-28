@@ -68,10 +68,14 @@ final class Plugin {
 			true
 		);
 
+		global $post;
+		$newsletter_id = $post ? (int) get_post_meta( $post->ID, '_swl_newsletter_id', true ) : 0;
+
 		wp_localize_script( 'swiftletter-article-sidebar', 'swiftletterData', [
 			'restUrl'      => esc_url_raw( rest_url( 'swiftletter/v1/' ) ),
 			'nonce'        => wp_create_nonce( 'wp_rest' ),
 			'dashboardUrl' => admin_url( 'admin.php?page=swiftletter' ),
+			'newsletterId' => $newsletter_id,
 		] );
 	}
 
@@ -99,6 +103,8 @@ final class Plugin {
 			return;
 		}
 
+		$newsletter_id = (int) get_post_meta( $post_id, '_swl_newsletter_id', true );
+
 		$confirmed = get_post_meta( $post_id, '_swl_review_confirmed', true );
 		if ( $confirmed ) {
 			update_post_meta( $post_id, '_swl_review_confirmed', false );
@@ -106,10 +112,14 @@ final class Plugin {
 			update_post_meta( $post_id, '_swl_review_confirmed_by', 0 );
 
 			$audit = new Audit\AuditLog();
-			$newsletter_id = (int) get_post_meta( $post_id, '_swl_newsletter_id', true );
 			$audit->log( $newsletter_id, $post_id, 'review_reset_on_edit', [
 				'reason' => 'Content edited after review confirmation',
 			] );
+		}
+
+		// Rebuild the published newsletter post so content changes reflect immediately.
+		if ( $newsletter_id ) {
+			REST\ExportController::rebuild_published_post( $newsletter_id );
 		}
 	}
 

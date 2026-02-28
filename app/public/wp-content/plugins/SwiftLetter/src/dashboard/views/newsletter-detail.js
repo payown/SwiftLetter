@@ -27,6 +27,10 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 	const [ publishingPost, setPublishingPost ] = useState( false );
 	const [ publishedPostEditUrl, setPublishedPostEditUrl ] = useState( null );
 
+	// Newsletter-level audio.
+	const [ generatingNewsletterAudio, setGeneratingNewsletterAudio ] = useState( false );
+	const [ newsletterHasAudio, setNewsletterHasAudio ] = useState( false );
+
 	// Alt text for images imported from DOCX.
 	const [ imagesNeedingAltText, setImagesNeedingAltText ] = useState( [] );
 	const [ generatingAltText, setGeneratingAltText ] = useState( {} );
@@ -53,6 +57,13 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 	useEffect( () => {
 		loadNewsletter();
 	}, [ loadNewsletter ] );
+
+	// Sync newsletter audio status whenever newsletter data loads.
+	useEffect( () => {
+		if ( newsletter ) {
+			setNewsletterHasAudio( newsletter.has_newsletter_audio || false );
+		}
+	}, [ newsletter ] );
 
 	// Title editing.
 	const saveTitle = async () => {
@@ -264,6 +275,23 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 		}
 	};
 
+	// Generate newsletter-level audio.
+	const handleGenerateNewsletterAudio = async () => {
+		setGeneratingNewsletterAudio( true );
+		try {
+			await apiFetch( {
+				path: `/swiftletter/v1/newsletters/${ newsletterId }/generate-audio`,
+				method: 'POST',
+			} );
+			setNewsletterHasAudio( true );
+			notify( __( 'Newsletter audio generated!', 'swiftletter' ) );
+		} catch ( err ) {
+			notify( err.message || __( 'Failed to generate newsletter audio.', 'swiftletter' ), 'error' );
+		} finally {
+			setGeneratingNewsletterAudio( false );
+		}
+	};
+
 	// Keyboard shortcuts.
 	const shortcuts = useMemo( () => [
 		{ key: 'a', handler: () => setShowAddModal( true ), disabled: showAddModal },
@@ -386,6 +414,26 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 				>
 					{ publishingPost ? __( 'Publishing…', 'swiftletter' ) : __( 'Publish as Blog Post', 'swiftletter' ) }
 				</Button>
+
+					<Button
+						variant="secondary"
+						onClick={ handleGenerateNewsletterAudio }
+						isBusy={ generatingNewsletterAudio }
+						disabled={ generatingNewsletterAudio || articles.length === 0 }
+					>
+						{ generatingNewsletterAudio
+							? __( 'Generating Audio\u2026', 'swiftletter' )
+							: newsletterHasAudio
+								? __( 'Regenerate Newsletter Audio', 'swiftletter' )
+								: __( 'Generate Newsletter Audio', 'swiftletter' )
+						}
+					</Button>
+
+					{ newsletterHasAudio && (
+						<span className="swl-badge swl-badge--has-audio">
+							{ __( 'Newsletter Audio', 'swiftletter' ) }
+						</span>
+					) }
 				</div>
 			</div>
 

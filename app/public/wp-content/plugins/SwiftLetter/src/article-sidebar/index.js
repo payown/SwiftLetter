@@ -11,9 +11,16 @@ import AudioPanel from './panels/audio';
 
 function ReturnToBuilderNotice() {
 	const params = new URLSearchParams( window.location.search );
-	const returnNewsletterId = params.get( 'swl_return' );
+	// Use swl_return URL param when opening from the dashboard, or fall back to
+	// the newsletter ID embedded in the localized script data (covers opening an
+	// article directly from the WP admin articles list).
+	const returnNewsletterId =
+		params.get( 'swl_return' ) ||
+		( window.swiftletterData?.newsletterId
+			? String( window.swiftletterData.newsletterId )
+			: null );
 
-	if ( ! returnNewsletterId ) {
+	if ( ! returnNewsletterId || returnNewsletterId === '0' ) {
 		return null;
 	}
 

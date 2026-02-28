@@ -288,13 +288,14 @@ class NewslettersController extends \WP_REST_Controller {
 
 	private function prepare_newsletter( \WP_Post $post ): array {
 		return [
-			'id'            => $post->ID,
-			'title'         => $post->post_title,
-			'date'          => $post->post_date,
-			'date_gmt'      => $post->post_date_gmt,
-			'modified'      => $post->post_modified,
-			'modified_gmt'  => $post->post_modified_gmt,
-			'article_count' => $this->get_article_count( $post->ID ),
+			'id'                  => $post->ID,
+			'title'               => $post->post_title,
+			'date'                => $post->post_date,
+			'date_gmt'            => $post->post_date_gmt,
+			'modified'            => $post->post_modified,
+			'modified_gmt'        => $post->post_modified_gmt,
+			'article_count'       => $this->get_article_count( $post->ID ),
+			'has_newsletter_audio' => ! empty( get_post_meta( $post->ID, '_swl_newsletter_audio_file_path', true ) ),
 		];
 	}
 

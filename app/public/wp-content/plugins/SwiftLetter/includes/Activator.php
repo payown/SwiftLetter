@@ -43,6 +43,7 @@ class Activator {
 		$upload_dir  = wp_upload_dir();
 		$swl_dir     = $upload_dir['basedir'] . '/swiftletter/audio';
 		$exports_dir = $upload_dir['basedir'] . '/swiftletter/exports';
+		$docx_dir    = $upload_dir['basedir'] . '/swiftletter/docx';
 
 		if ( ! is_dir( $swl_dir ) ) {
 			wp_mkdir_p( $swl_dir );
@@ -50,18 +51,35 @@ class Activator {
 		if ( ! is_dir( $exports_dir ) ) {
 			wp_mkdir_p( $exports_dir );
 		}
+		if ( ! is_dir( $docx_dir ) ) {
+			wp_mkdir_p( $docx_dir );
+		}
 
-		// Protect directories from direct access.
-		$protected_dirs = [ $swl_dir, $exports_dir ];
-		foreach ( $protected_dirs as $dir ) {
-			$htaccess_path = $dir . '/.htaccess';
-			if ( ! file_exists( $htaccess_path ) ) {
-				file_put_contents( $htaccess_path, "deny from all\n" );
-			}
-			$index_path = $dir . '/index.php';
-			if ( ! file_exists( $index_path ) ) {
-				file_put_contents( $index_path, "<?php\n// Silence is golden.\n" );
-			}
+		// Audio directory: must be publicly accessible so audio players and download
+		// links in published posts work for all readers. Remove any existing deny rule.
+		$audio_htaccess = $swl_dir . '/.htaccess';
+		if ( file_exists( $audio_htaccess ) ) {
+			wp_delete_file( $audio_htaccess );
+		}
+		$audio_index = $swl_dir . '/index.php';
+		if ( ! file_exists( $audio_index ) ) {
+			file_put_contents( $audio_index, "<?php\n// Silence is golden.\n" );
+		}
+
+		// Exports directory: internal use only, keep protected.
+		$exports_htaccess = $exports_dir . '/.htaccess';
+		if ( ! file_exists( $exports_htaccess ) ) {
+			file_put_contents( $exports_htaccess, "deny from all\n" );
+		}
+		$exports_index = $exports_dir . '/index.php';
+		if ( ! file_exists( $exports_index ) ) {
+			file_put_contents( $exports_index, "<?php\n// Silence is golden.\n" );
+		}
+
+		// DOCX directory: publicly accessible so readers can download Word documents.
+		$docx_index = $docx_dir . '/index.php';
+		if ( ! file_exists( $docx_index ) ) {
+			file_put_contents( $docx_index, "<?php\n// Silence is golden.\n" );
 		}
 
 		// Flush rewrite rules.
