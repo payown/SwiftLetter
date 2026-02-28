@@ -210,19 +210,19 @@ class SettingsPage {
 		}
 
 		$placeholder = ! empty( $masked ) ? $masked : __( 'Enter API key', 'swiftletter' );
-		$field_id    = esc_attr( $option_name );
+		$field_id    = $option_name;
 		?>
 		<input
 			type="password"
-			id="<?php echo $field_id; ?>"
-			name="<?php echo $field_id; ?>"
+			id="<?php echo esc_attr( $field_id ); ?>"
+			name="<?php echo esc_attr( $field_id ); ?>"
 			value=""
 			placeholder="<?php echo esc_attr( $placeholder ); ?>"
 			class="regular-text"
 			autocomplete="off"
-			aria-describedby="<?php echo $field_id; ?>-desc"
+			aria-describedby="<?php echo esc_attr( $field_id ); ?>-desc"
 		/>
-		<p class="description" id="<?php echo $field_id; ?>-desc">
+		<p class="description" id="<?php echo esc_attr( $field_id ); ?>-desc">
 			<?php
 			if ( ! empty( $masked ) ) {
 				/* translators: %s: masked API key */
@@ -275,7 +275,7 @@ class SettingsPage {
 		$typography = get_option( 'swl_typography', \SwiftLetter\Activator::default_typography() );
 		$key        = $args['field_key'];
 		$value      = $typography[ $key ] ?? '';
-		$field_id   = 'swl_typo_' . esc_attr( $key );
+		$field_id   = 'swl_typo_' . $key;
 
 		$is_color = in_array( $key, [ 'text_color', 'bg_color', 'link_color' ], true );
 		$is_size  = str_ends_with( $key, '_size' );
@@ -284,13 +284,13 @@ class SettingsPage {
 		?>
 		<input
 			type="<?php echo esc_attr( $type ); ?>"
-			id="<?php echo $field_id; ?>"
+			id="<?php echo esc_attr( $field_id ); ?>"
 			name="swl_typography[<?php echo esc_attr( $key ); ?>]"
 			value="<?php echo esc_attr( $value ); ?>"
 			<?php if ( $is_size ) : ?>
 				min="8" max="72" step="1"
 			<?php endif; ?>
-			class="<?php echo $is_color ? 'swl-color-picker' : 'regular-text'; ?>"
+			class="<?php echo esc_attr( $is_color ? 'swl-color-picker' : 'regular-text' ); ?>"
 		/>
 		<?php
 	}
