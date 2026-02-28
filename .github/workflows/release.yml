@@ -47,7 +47,7 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.version }}
           PLUGIN_DIR="app/public/wp-content/plugins/SwiftLetter"
-          STAGING="staging/swiftletter"
+          STAGING="staging/SwiftLetter"
           mkdir -p "$STAGING"
           rsync -a \
             --exclude='.git' \
@@ -61,7 +61,7 @@ jobs:
             --exclude='CLAUDE.md' \
             "$PLUGIN_DIR/" "$STAGING/"
           cd staging
-          zip -r "../swiftletter-${VERSION}.zip" swiftletter/
+          zip -r "../swiftletter-${VERSION}.zip" SwiftLetter/
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
