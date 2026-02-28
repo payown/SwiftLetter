@@ -48,10 +48,11 @@ jobs:
       - name: Verify vendor completeness
         working-directory: app/public/wp-content/plugins/SwiftLetter
         run: |
-          test -d vendor/openai-php/client                          || (echo "MISSING: openai-php" && exit 1)
-          test -d vendor/phpoffice/phpword                          || (echo "MISSING: phpword"   && exit 1)
-          test -d vendor/yahnis-elsts/plugin-update-checker         || (echo "MISSING: plugin-update-checker" && exit 1)
-          test -f vendor/autoload.php                               || (echo "MISSING: autoload"  && exit 1)
+          test -d vendor/openai-php/client/src                    || (echo "MISSING: openai-php/client/src" && exit 1)
+          test -d vendor/phpoffice/phpword/src                    || (echo "MISSING: phpoffice/phpword/src" && exit 1)
+          test -d vendor/yahnis-elsts/plugin-update-checker       || (echo "MISSING: plugin-update-checker" && exit 1)
+          test -f vendor/autoload.php                             || (echo "MISSING: autoload" && exit 1)
+          php -r "require 'vendor/autoload.php';" 2>&1           || (echo "FATAL: autoloader failed" && exit 1)
           echo "Vendor verified OK"
 
       - name: Package plugin zip
@@ -65,8 +66,8 @@ jobs:
             --exclude='.claude' \
             --exclude='.gitignore' \
             --exclude='node_modules' \
-            --exclude='src' \
-            --exclude='tests' \
+            --exclude='/src' \
+            --exclude='/tests' \
             --exclude='package.json' \
             --exclude='package-lock.json' \
             --exclude='CLAUDE.md' \
