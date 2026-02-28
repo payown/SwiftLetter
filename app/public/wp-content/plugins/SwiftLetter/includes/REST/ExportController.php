@@ -69,10 +69,8 @@ class ExportController extends \WP_REST_Controller {
 			);
 		}
 
-		// Generate DOCX files for all articles before building content.
-		foreach ( $articles as $article ) {
-			$this->generate_article_docx( $article );
-		}
+		// Generate combined newsletter DOCX before building the post content.
+		$this->generate_newsletter_docx( $newsletter, $articles );
 
 		$content = $this->build_post_content( $newsletter, $articles );
 
@@ -104,32 +102,48 @@ class ExportController extends \WP_REST_Controller {
 
 	/**
 	 * Build the combined Gutenberg block content for a newsletter post.
-	 * Includes optional newsletter-level audio before the TOC, then a clickable
-	 * Table of Contents, followed by each article's "Available Formats" section
-	 * and content.
+	 *
+	 * Structure:
+	 *   [Available Formats] — newsletter DOCX download + audio player + audio download
+	 *   [Table of Contents]
+	 *   [Article sections — heading + content only, no per-article format blocks]
 	 */
 	private function build_post_content( \WP_Post $newsletter, array $articles ): string {
 		$blocks = '';
 
-		// Newsletter-level audio player — shown before the Table of Contents.
+		// "Available Formats" section — newsletter-level downloads and audio.
+		// Shown when the newsletter has a DOCX or audio file.
 		$newsletter_audio_path = get_post_meta( $newsletter->ID, '_swl_newsletter_audio_file_path', true );
-		if ( ! empty( $newsletter_audio_path ) && file_exists( $newsletter_audio_path ) ) {
-			$newsletter_audio_url = $this->get_audio_url( $newsletter_audio_path );
-			if ( $newsletter_audio_url ) {
-				$blocks .= "<!-- wp:heading {\"level\":2} -->\n<h2>Listen to This Newsletter</h2>\n<!-- /wp:heading -->\n\n";
+		$newsletter_docx_path  = get_post_meta( $newsletter->ID, '_swl_newsletter_docx_file_path', true );
+		$newsletter_audio_url  = ( ! empty( $newsletter_audio_path ) && file_exists( $newsletter_audio_path ) )
+			? $this->get_audio_url( $newsletter_audio_path )
+			: null;
+		$newsletter_docx_url   = ( ! empty( $newsletter_docx_path ) && file_exists( $newsletter_docx_path ) )
+			? $this->get_docx_url( $newsletter_docx_path )
+			: null;
 
+		if ( $newsletter_audio_url || $newsletter_docx_url ) {
+			$blocks .= "<!-- wp:heading {\"level\":2} -->\n<h2>Available Formats</h2>\n<!-- /wp:heading -->\n\n";
+
+			if ( $newsletter_docx_url ) {
+				$blocks .= sprintf(
+					"<!-- wp:paragraph -->\n<p><a href=\"%s\" download>Download Newsletter as Word Document</a></p>\n<!-- /wp:paragraph -->\n\n",
+					esc_url( $newsletter_docx_url )
+				);
+			}
+
+			if ( $newsletter_audio_url ) {
 				$blocks .= sprintf(
 					"<!-- wp:audio -->\n<figure class=\"wp-block-audio\"><audio controls src=\"%s\"></audio></figure>\n<!-- /wp:audio -->\n\n",
 					esc_url( $newsletter_audio_url )
 				);
-
 				$blocks .= sprintf(
 					"<!-- wp:paragraph -->\n<p><a href=\"%s\" download>Download Newsletter Audio (MP3)</a></p>\n<!-- /wp:paragraph -->\n\n",
 					esc_url( $newsletter_audio_url )
 				);
-
-				$blocks .= "<!-- wp:separator -->\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n<!-- /wp:separator -->\n\n";
 			}
+
+			$blocks .= "<!-- wp:separator -->\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n<!-- /wp:separator -->\n\n";
 		}
 
 		// Table of Contents heading.
@@ -162,34 +176,6 @@ class ExportController extends \WP_REST_Controller {
 				esc_html( $article->post_title )
 			);
 
-			// "Available Formats" section — shown when the article has audio or a DOCX file.
-			$audio_path = get_post_meta( $article->ID, '_swl_audio_file_path', true );
-			$docx_path  = get_post_meta( $article->ID, '_swl_docx_file_path', true );
-			$audio_url  = ( ! empty( $audio_path ) && file_exists( $audio_path ) ) ? $this->get_audio_url( $audio_path ) : null;
-			$docx_url   = ( ! empty( $docx_path ) && file_exists( $docx_path ) ) ? $this->get_docx_url( $docx_path ) : null;
-
-			if ( $audio_url || $docx_url ) {
-				$blocks .= "<!-- wp:heading {\"level\":3} -->\n<h3>Available Formats</h3>\n<!-- /wp:heading -->\n\n";
-
-				if ( $docx_url ) {
-					$blocks .= sprintf(
-						"<!-- wp:paragraph -->\n<p><a href=\"%s\" download>Download as Word Document</a></p>\n<!-- /wp:paragraph -->\n\n",
-						esc_url( $docx_url )
-					);
-				}
-
-				if ( $audio_url ) {
-					$blocks .= sprintf(
-						"<!-- wp:audio -->\n<figure class=\"wp-block-audio\"><audio controls src=\"%s\"></audio></figure>\n<!-- /wp:audio -->\n\n",
-						esc_url( $audio_url )
-					);
-					$blocks .= sprintf(
-						"<!-- wp:paragraph -->\n<p><a href=\"%s\" download>Download Audio (MP3)</a></p>\n<!-- /wp:paragraph -->\n\n",
-						esc_url( $audio_url )
-					);
-				}
-			}
-
 			// Article body blocks as-is.
 			$blocks .= trim( $article->post_content ) . "\n\n";
 
@@ -201,29 +187,33 @@ class ExportController extends \WP_REST_Controller {
 	}
 
 	/**
-	 * Generate a Word (.docx) file for an article using PhpWord's HTML reader.
-	 * Saves to the public docx uploads directory and stores the path in post meta.
+	 * Generate a single Word (.docx) file containing all articles in the newsletter.
+	 * Saves to the public docx directory and stores the path in newsletter post meta.
 	 *
-	 * @param \WP_Post $article
+	 * @param \WP_Post   $newsletter
+	 * @param \WP_Post[] $articles   Ordered array of article posts.
 	 * @return string|null File path on success, null on failure.
 	 */
-	private function generate_article_docx( \WP_Post $article ): ?string {
+	private function generate_newsletter_docx( \WP_Post $newsletter, array $articles ): ?string {
 		if ( ! class_exists( '\PhpOffice\PhpWord\PhpWord' ) ) {
 			return null;
 		}
-
-		// Render Gutenberg blocks to HTML.
-		$html = apply_filters( 'the_content', do_blocks( $article->post_content ) );
 
 		try {
 			$phpword = new \PhpOffice\PhpWord\PhpWord();
 			$section = $phpword->addSection();
 
-			// Article title as a top-level heading.
-			$section->addTitle( $article->post_title, 1 );
+			// Newsletter title as the document's top-level heading.
+			$section->addTitle( $newsletter->post_title, 1 );
 
-			// Parse rendered HTML into PhpWord elements.
-			\PhpOffice\PhpWord\Shared\Html::addHtml( $section, $html, false, false );
+			foreach ( $articles as $article ) {
+				// Article title as a second-level heading.
+				$section->addTitle( $article->post_title, 2 );
+
+				// Render Gutenberg blocks to HTML and parse into PhpWord elements.
+				$html = apply_filters( 'the_content', do_blocks( $article->post_content ) );
+				\PhpOffice\PhpWord\Shared\Html::addHtml( $section, $html, false, false );
+			}
 
 			$upload_dir = wp_upload_dir();
 			$docx_dir   = $upload_dir['basedir'] . '/swiftletter/docx';
@@ -231,16 +221,16 @@ class ExportController extends \WP_REST_Controller {
 				wp_mkdir_p( $docx_dir );
 			}
 
-			$file_path = $docx_dir . '/article-' . $article->ID . '.docx';
+			$file_path = $docx_dir . '/newsletter-' . $newsletter->ID . '.docx';
 
 			$writer = \PhpOffice\PhpWord\IOFactory::createWriter( $phpword, 'Word2007' );
 			$writer->save( $file_path );
 
-			update_post_meta( $article->ID, '_swl_docx_file_path', $file_path );
+			update_post_meta( $newsletter->ID, '_swl_newsletter_docx_file_path', $file_path );
 
 			return $file_path;
 		} catch ( \Throwable $e ) {
-			error_log( 'SwiftLetter DOCX generation error for article ' . $article->ID . ': ' . $e->getMessage() );
+			error_log( 'SwiftLetter DOCX generation error for newsletter ' . $newsletter->ID . ': ' . $e->getMessage() );
 			return null;
 		}
 	}
@@ -305,10 +295,8 @@ class ExportController extends \WP_REST_Controller {
 			return;
 		}
 
-		// Regenerate DOCX files so downloads reflect the latest article content.
-		foreach ( $articles as $article ) {
-			$instance->generate_article_docx( $article );
-		}
+		// Regenerate the combined newsletter DOCX so downloads reflect the latest content.
+		$instance->generate_newsletter_docx( $newsletter, $articles );
 
 		$content = $instance->build_post_content( $newsletter, $articles );
 

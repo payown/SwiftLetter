@@ -296,6 +296,7 @@ class NewslettersController extends \WP_REST_Controller {
 			'modified_gmt'        => $post->post_modified_gmt,
 			'article_count'       => $this->get_article_count( $post->ID ),
 			'has_newsletter_audio' => ! empty( get_post_meta( $post->ID, '_swl_newsletter_audio_file_path', true ) ),
+			'has_newsletter_docx'  => ! empty( get_post_meta( $post->ID, '_swl_newsletter_docx_file_path', true ) ),
 		];
 	}
 
