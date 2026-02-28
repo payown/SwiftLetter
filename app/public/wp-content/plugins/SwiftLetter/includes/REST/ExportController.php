@@ -212,7 +212,7 @@ class ExportController extends \WP_REST_Controller {
 
 				// Render Gutenberg blocks to HTML and parse into PhpWord elements.
 				$html = apply_filters( 'the_content', do_blocks( $article->post_content ) );
-				\PhpOffice\PhpWord\Shared\Html::addHtml( $section, $html, false, false );
+				\PhpOffice\PhpWord\Shared\Html::addHtml( $section, '<div>' . $html . '</div>', false, false );
 			}
 
 			$upload_dir = wp_upload_dir();

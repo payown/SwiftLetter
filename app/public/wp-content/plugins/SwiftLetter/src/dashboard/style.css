@@ -165,6 +165,15 @@
 	color: #004085;
 }
 
+.swl-audio-progress {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 8px;
+	color: #757575;
+	font-size: 13px;
+}
+
 /* Shortcut badge inside buttons */
 .swl-shortcut-badge {
 	display: inline-block;

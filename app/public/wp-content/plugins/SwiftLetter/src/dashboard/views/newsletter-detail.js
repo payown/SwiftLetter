@@ -437,6 +437,13 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 				</div>
 			</div>
 
+			{ generatingNewsletterAudio && (
+				<div className="swl-audio-progress">
+					<Spinner />
+					<span>{ __( 'Generating audio for all articles. This may take a minute\u2026', 'swiftletter' ) }</span>
+				</div>
+			) }
+
 			{ publishedPostEditUrl && (
 				<div className="swl-notification swl-notification--success" role="status">
 					{ __( 'Draft post created: ', 'swiftletter' ) }
