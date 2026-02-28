@@ -48,9 +48,10 @@ jobs:
       - name: Verify vendor completeness
         working-directory: app/public/wp-content/plugins/SwiftLetter
         run: |
-          test -f vendor/openai-php/client/src/OpenAI.php  || (echo "MISSING: openai-php" && exit 1)
-          test -f vendor/phpoffice/phpword/src/PhpWord.php || (echo "MISSING: phpword"   && exit 1)
-          test -f vendor/autoload.php                       || (echo "MISSING: autoload"  && exit 1)
+          test -d vendor/openai-php/client                          || (echo "MISSING: openai-php" && exit 1)
+          test -d vendor/phpoffice/phpword                          || (echo "MISSING: phpword"   && exit 1)
+          test -d vendor/yahnis-elsts/plugin-update-checker         || (echo "MISSING: plugin-update-checker" && exit 1)
+          test -f vendor/autoload.php                               || (echo "MISSING: autoload"  && exit 1)
           echo "Vendor verified OK"
 
       - name: Package plugin zip

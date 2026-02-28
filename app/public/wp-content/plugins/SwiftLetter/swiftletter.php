@@ -3,7 +3,7 @@
  * Plugin Name:       SwiftLetter
  * Plugin URI:        https://example.com/swiftletter
  * Description:       Accessible newsletter compilation, refinement, and multi-format publishing.
- * Version:           1.0.5
+ * Version:           1.0.6
  * Requires at least: 6.9
  * Requires PHP:      8.1
  * Author:            SwiftLetter
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SWIFTLETTER_VERSION', '1.0.5' );
+define( 'SWIFTLETTER_VERSION', '1.0.6' );
 define( 'SWIFTLETTER_FILE', __FILE__ );
 define( 'SWIFTLETTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SWIFTLETTER_URL', plugin_dir_url( __FILE__ ) );
