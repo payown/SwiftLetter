@@ -46,6 +46,9 @@ final class Plugin {
 
 		// Reset review confirmation when article content changes.
 		add_action( 'save_post_swl_article', [ $this, 'on_article_save' ], 10, 3 );
+
+		// GitHub-based update checker.
+		Updates\UpdateChecker::init();
 	}
 
 	public function enqueue_article_sidebar(): void {

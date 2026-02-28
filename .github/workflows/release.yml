@@ -41,7 +41,17 @@ jobs:
 
       - name: Install PHP dependencies (production only)
         working-directory: app/public/wp-content/plugins/SwiftLetter
-        run: composer install --no-dev --optimize-autoloader
+        run: |
+          rm -rf vendor
+          composer update --no-dev --optimize-autoloader --prefer-dist
+
+      - name: Verify vendor completeness
+        working-directory: app/public/wp-content/plugins/SwiftLetter
+        run: |
+          test -f vendor/openai-php/client/src/OpenAI.php  || (echo "MISSING: openai-php" && exit 1)
+          test -f vendor/phpoffice/phpword/src/PhpWord.php || (echo "MISSING: phpword"   && exit 1)
+          test -f vendor/autoload.php                       || (echo "MISSING: autoload"  && exit 1)
+          echo "Vendor verified OK"
 
       - name: Package plugin zip
         run: |

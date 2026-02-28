@@ -9,7 +9,8 @@
 		"symfony/http-client": "^7.4",
 		"nyholm/psr7": "^1.8",
 		"phpoffice/phpword": "^1.3",
-		"james-heinrich/getid3": "^1.9"
+		"james-heinrich/getid3": "^1.9",
+		"yahnis-elsts/plugin-update-checker": "^5.5"
 	},
 	"autoload": {
 		"psr-4": {
