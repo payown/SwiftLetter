@@ -178,6 +178,15 @@ class ExportController extends \WP_REST_Controller {
 				esc_html( $article->post_title )
 			);
 
+			// Optional byline.
+			$author = get_post_meta( $article->ID, '_swl_author', true );
+			if ( ! empty( $author ) ) {
+				$blocks .= sprintf(
+					"<!-- wp:paragraph -->\n<p><em>By %s</em></p>\n<!-- /wp:paragraph -->\n\n",
+					esc_html( $author )
+				);
+			}
+
 			// Article body blocks as-is.
 			$blocks .= trim( $article->post_content ) . "\n\n";
 
@@ -211,6 +220,12 @@ class ExportController extends \WP_REST_Controller {
 			foreach ( $articles as $article ) {
 				// Article title as a second-level heading.
 				$section->addTitle( $article->post_title, 2 );
+
+				// Optional byline.
+				$author = get_post_meta( $article->ID, '_swl_author', true );
+				if ( ! empty( $author ) ) {
+					$section->addText( 'By ' . $author, [ 'italic' => true ] );
+				}
 
 				// Render Gutenberg blocks to HTML and parse into PhpWord elements.
 				$html = apply_filters( 'the_content', do_blocks( $article->post_content ) );

@@ -25,6 +25,7 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 	const [ showAddModal, setShowAddModal ] = useState( false );
 	const [ newArticleTitle, setNewArticleTitle ] = useState( '' );
 	const [ newArticleTitleError, setNewArticleTitleError ] = useState( '' );
+	const [ newArticleAuthor, setNewArticleAuthor ] = useState( '' );
 	const [ addingArticle, setAddingArticle ] = useState( false );
 
 	// Publish as WordPress post.
@@ -164,6 +165,7 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 		setShowAddModal( false );
 		setNewArticleTitle( '' );
 		setNewArticleTitleError( '' );
+		setNewArticleAuthor( '' );
 		setTimeout( () => addArticleBtnRef.current?.focus(), 0 );
 	}, [] );
 
@@ -183,6 +185,7 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 				data: {
 					title: newArticleTitle.trim(),
 					newsletter_id: newsletterId,
+					author_name: newArticleAuthor.trim(),
 				},
 			} );
 			closeAddModal();
@@ -641,6 +644,13 @@ export default function NewsletterDetail( { newsletterId, navigate, notify } ) {
 								{ newArticleTitleError }
 							</p>
 						) }
+					</div>
+					<div className="swl-form-group">
+						<TextControl
+							label={ __( 'Author', 'swiftletter' ) }
+							value={ newArticleAuthor }
+							onChange={ setNewArticleAuthor }
+						/>
 					</div>
 					<div className="swl-form-actions">
 						<Button

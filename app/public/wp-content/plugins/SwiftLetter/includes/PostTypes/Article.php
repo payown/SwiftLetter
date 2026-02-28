@@ -60,6 +60,11 @@ class Article {
 				'type'    => 'string',
 				'default' => '',
 			],
+			'_swl_author' => [
+				'type'              => 'string',
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			],
 		];
 
 		// Fields that must NOT be exposed or writable via REST to prevent path traversal attacks.
@@ -67,7 +72,7 @@ class Article {
 
 		foreach ( $meta_fields as $key => $args ) {
 			$is_protected = in_array( $key, $protected_fields, true );
-			register_post_meta( self::POST_TYPE, $key, [
+			$meta_args = [
 				'show_in_rest'  => ! $is_protected,
 				'single'        => true,
 				'type'          => $args['type'],
@@ -75,7 +80,11 @@ class Article {
 				'auth_callback' => function ( $allowed, $meta_key, $post_id ) {
 					return current_user_can( 'edit_post', $post_id );
 				},
-			] );
+			];
+			if ( ! empty( $args['sanitize_callback'] ) ) {
+				$meta_args['sanitize_callback'] = $args['sanitize_callback'];
+			}
+			register_post_meta( self::POST_TYPE, $key, $meta_args );
 		}
 	}
 }

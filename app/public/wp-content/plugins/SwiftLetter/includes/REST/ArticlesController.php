@@ -32,6 +32,11 @@ class ArticlesController extends \WP_REST_Controller {
 						'type'    => 'string',
 						'default' => '',
 					],
+					'author_name'   => [
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					],
 				],
 			],
 		] );
@@ -171,6 +176,7 @@ class ArticlesController extends \WP_REST_Controller {
 
 		update_post_meta( $post_id, '_swl_newsletter_id', $newsletter_id );
 		update_post_meta( $post_id, '_swl_article_order', $next_order );
+		update_post_meta( $post_id, '_swl_author', $request['author_name'] );
 
 		$audit = new AuditLog();
 		$audit->log( $newsletter_id, $post_id, 'article_created', [
@@ -637,6 +643,7 @@ class ArticlesController extends \WP_REST_Controller {
 			'review_confirmed'  => (bool) get_post_meta( $post->ID, '_swl_review_confirmed', true ),
 			'review_confirmed_at' => get_post_meta( $post->ID, '_swl_review_confirmed_at', true ),
 			'has_audio'         => ! empty( get_post_meta( $post->ID, '_swl_audio_file_path', true ) ),
+			'author'            => (string) get_post_meta( $post->ID, '_swl_author', true ),
 			'edit_url'          => get_edit_post_link( $post->ID, 'raw' ),
 		];
 	}
